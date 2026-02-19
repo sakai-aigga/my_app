@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'courses.dart';
+import 'package:my_app/features/courses/pages/course_page.dart';
 import 'profile.dart';
 import 'login.dart';
 
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = const [
     Center(child: Text("Welcome to Home")),
-    CoursePage(),
+    CoursesPage(),
     ProfilePage(),
   ];
 
