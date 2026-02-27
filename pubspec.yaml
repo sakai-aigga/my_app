@@ -38,6 +38,9 @@ dependencies:
   app_color: ^1.1.2
   firebase_core: ^4.3.0
   firebase_auth: ^6.1.4
+  flutter_secure_storage: ^10.0.0
+  dio: ^5.8.0+1
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
