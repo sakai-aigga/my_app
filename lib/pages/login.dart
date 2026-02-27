@@ -3,13 +3,39 @@ import 'package:my_app/core/constants.dart';
 import 'package:my_app/core/utils.dart';
 import 'package:my_app/pages/home.dart';
 import 'package:my_app/pages/signup.dart';
+import 'package:my_app/pages/reset_pwd.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_app/core/services/auth_session_storage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
+}
+
+class _ForgotPasswordLink extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+          );
+        },
+        child: const Text(
+          'Forgot Password?',
+          style: TextStyle(
+            color: AppColors.primaryBlue,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -34,7 +60,13 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+      // Save credentials for auto-login
+      await AuthSessionStorage.setLoggedIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
       // On successful login, navigate to HomePage
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
@@ -58,78 +90,83 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     print('LoginPage build called');
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Logo Image
-            Image.asset('assets/images/logo.png', height: 120),
-            const SizedBox(height: 20),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo Image
+              Image.asset('assets/images/logo.png', height: 120),
+              const SizedBox(height: 20),
 
-            const Text(
-              'KUSOED Login',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryBlue,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Email Field
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            // Password Field
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Login Button
-            SizedBox(
-              width: double.infinity,
-              height: 45,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  foregroundColor: Colors.white,
+              const Text(
+                'KUSOED Login',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryBlue,
                 ),
-                onPressed: _login,
-                child: const Text('Login'),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                showSnackBar(
-                  context,
-                  'Navigating to Register Page',
-                  AppColors.warmWheat,
-                );
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegisterPage()),
-                );
-              },
-              child: const Text('Create new account'),
-            ),
-          ],
+              const SizedBox(height: 30),
+
+              // Email Field
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email_outlined),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              // Password Field
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: Icon(Icons.lock_outline),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              _ForgotPasswordLink(),
+
+              const SizedBox(height: 20),
+
+              // Login Button
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: _login,
+                  child: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegisterPage()),
+                  );
+                },
+                child: const Text('Don\'t have an account? Create one'),
+              ),
+            ],
+          ),
         ),
       ),
     );
